@@ -36,7 +36,7 @@ class ViewController: UIViewController {
                 if let acceleration = data?.acceleration {
                     let value = fabs(acceleration.x + acceleration.y + acceleration.z)
                     strongSelf.accelerationHistory.append(value)
-                    if (strongSelf.accelerationHistory.count > 50) {
+                    if (strongSelf.accelerationHistory.count > 10) {
                         strongSelf.accelerationHistory.remove(at: 0)
                     }
                 }
@@ -48,11 +48,24 @@ class ViewController: UIViewController {
     @IBAction func doStuff() {
 
         // find the last highest
-        let highest = self.accelerationHistory.max() ?? 0.1
+        let highest = self.accelerationHistory.max() ?? 1.2
 
         print("highest value: \(highest)")
 
-        self.midiEngine?.playNote(self.x, length: 0.15, velocity: UInt8(Int(highest*32.0)))
+        var velocity = (highest-0.8)*64.0
+
+        if velocity < 0 {
+            velocity = 1
+        }
+
+        if velocity > 126 {
+            velocity = 126
+        }
+
+        print("velocity: \(velocity)")
+
+
+        self.midiEngine?.playNote(self.x, length: 0.15, velocity: UInt8(velocity))
 
         self.x += 1
 
